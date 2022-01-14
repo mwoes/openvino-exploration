@@ -1,0 +1,40 @@
+<html>
+<head>
+<script src="./socket.io/socket.io.js"></script>
+
+</head>
+<body>
+<script>
+const socket = io('http://'+window.location.hostname + ':3030');
+
+
+socket.on('connect', () => {
+  console.log('connected to server');
+});
+
+socket.on("rects", (info) => {
+//  console.log('image received');
+//  console.log(info.cons);
+  if (info.image) {
+	var ctx = document.getElementById('img');
+    ctx.src = info.data;
+	var json = document.getElementById('json');
+	var code = document.getElementById('code');
+    json.textContent = JSON.stringify(info.faces, null, 2);
+  }
+});
+
+socket.on('live', (data) => {
+  var blob = new Blob( [ data.buffer ], { type: "image/jpeg" } );
+  var urlCreator = window.URL;
+  var ctx = document.getElementById('img-live');
+  var imageURL = urlCreator.createObjectURL(blob);
+  ctx.src = imageURL;
+});
+</script>
+<img src='' width="640px" height="480px" id="img-live" style="border:1px solid #000000;" />
+<img src='' width="550px" height="550px" id="img" style="border:1px solid #000000;" />
+<br />
+<div id="code"><pre id="json"></p></div>
+</body>
+</html>
